@@ -31,6 +31,7 @@
     body {
       position: fixed;
       inset: 0;
+      background: #000;
     }
 
     .page {
@@ -42,26 +43,33 @@
       background: #000;
     }
 
-    /* =========================
-       再生動画
-    ========================= */
-    .movie {
+    /* 横動画：画面いっぱいに拡大。余白は黒 */
+    .movie-wrap {
       position: fixed;
       inset: 0;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
-      object-fit: cover;
-      object-position: center center;
-      background: #000;
-      opacity: 0;
       z-index: 1;
+      background: #000;
+      overflow: hidden;
+      opacity: 0;
       transition: opacity 1.2s ease;
     }
 
-    /* =========================
-       最初の背景
-    ========================= */
+    .movie {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 100dvh;
+      min-width: 100vw;
+      min-height: 100dvh;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      object-position: center center;
+      background: #000;
+      display: block;
+    }
+
+    /* 最初の背景：ジャケ写ぼかし */
     .intro-bg-wrap {
       position: absolute;
       inset: 0;
@@ -87,9 +95,7 @@
       background: rgba(55, 146, 242, 0.6);
     }
 
-    /* =========================
-       上の手書きロゴ
-    ========================= */
+    /* 上の手書きロゴ */
     .event-logo {
       position: absolute;
       top: calc(env(safe-area-inset-top) + 18px);
@@ -125,9 +131,7 @@
       opacity: 0.92;
     }
 
-    /* =========================
-       最初のカード
-    ========================= */
+    /* 最初の視聴カード */
     .start-ui {
       position: absolute;
       inset: 0;
@@ -203,9 +207,7 @@
       opacity: 0.7;
     }
 
-    /* =========================
-       最後の投票画面
-    ========================= */
+    /* 最後の投票画面 */
     .vote-ui {
       position: absolute;
       inset: 0;
@@ -251,10 +253,8 @@
       text-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
     }
 
-    /* =========================
-       PLAY後
-    ========================= */
-    .page.is-playing .movie {
+    /* PLAY後 */
+    .page.is-playing .movie-wrap {
       opacity: 1;
     }
 
@@ -273,10 +273,8 @@
       transform: translateX(-50%) translateY(-8px);
     }
 
-    /* =========================
-       終了後
-    ========================= */
-    .page.is-finished .movie {
+    /* 終了後 */
+    .page.is-finished .movie-wrap {
       opacity: 0;
     }
 
@@ -284,9 +282,7 @@
       opacity: 1;
     }
 
-    /* =========================
-       低い画面対策
-    ========================= */
+    /* 低い画面対策 */
     @media (max-height: 760px) {
       .listen-card {
         width: min(74vw, 310px);
@@ -361,16 +357,18 @@
 <body>
   <main class="page" id="page">
 
-    <!-- 動画：iPhone対策で muted のまま再生 -->
-    <video
-      class="movie"
-      id="movie"
-      src="aotonatsu.m4v"
-      playsinline
-      webkit-playsinline
-      muted
-      preload="auto"
-    ></video>
+    <!-- 横動画：ミュートで再生して、音は別ファイル -->
+    <div class="movie-wrap">
+      <video
+        class="movie"
+        id="movie"
+        src="青と夏.m4v"
+        playsinline
+        webkit-playsinline
+        muted
+        preload="auto"
+      ></video>
+    </div>
 
     <!-- 音声 -->
     <audio
@@ -454,10 +452,6 @@
       try {
         await movie.play();
 
-        /*
-          iPhone対策：
-          動画を先に再生してから、少しだけ遅らせて音を再生
-        */
         setTimeout(async () => {
           try {
             await music.play();
